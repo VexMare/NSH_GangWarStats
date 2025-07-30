@@ -2,6 +2,8 @@
 =====================================
 如何你是不懂代码的新手 你应该去这个页面下载
 [releases](https://github.com/VexMare/NSH_GangWarStats/releases)
+
+
 程序现在支持用户导入不同的CSV文件，不再局限于固定的文件名！
 
 使用方法：
