@@ -39,18 +39,34 @@ class GuildLeagueProcessorAdvanced:
                 print("警告：未找到空行分隔符，使用默认第92行")
                 separator_line = 91
             
-            # 分离两个帮会的数据
-            self.guild1_data = self.data[1:separator_line]  # 跳过标题行
-            self.guild2_data = self.data[separator_line + 1:]  # 跳过空行
+            # 分离两个帮会的数据，过滤掉空行和标题行
+            self.guild1_data = [row for row in self.data[1:separator_line] if row and any(cell.strip() for cell in row) and row[0].strip() != '帮会名']
+            self.guild2_data = [row for row in self.data[separator_line + 1:] if row and any(cell.strip() for cell in row) and row[0].strip() != '帮会名']
+            
+            # 提取帮会名
+            self.guild1_name = self.extract_guild_name(self.guild1_data)
+            self.guild2_name = self.extract_guild_name(self.guild2_data)
             
             print(f"成功读取数据：")
-            print(f"帮会1数据行数：{len(self.guild1_data)}")
-            print(f"帮会2数据行数：{len(self.guild2_data)}")
+            print(f"帮会1：{self.guild1_name}，数据行数：{len(self.guild1_data)}")
+            print(f"帮会2：{self.guild2_name}，数据行数：{len(self.guild2_data)}")
             
         except Exception as e:
             print(f"读取CSV文件时出错：{e}")
             return False
         return True
+    
+    def extract_guild_name(self, data):
+        """从数据中提取帮会名"""
+        if not data:
+            return "未知帮会"
+        
+        # 查找第一个非空行的帮会名
+        for row in data:
+            if row and len(row) > 0 and row[0].strip() and row[0].strip() != '帮会名':
+                return row[0].strip()
+        
+        return "未知帮会"
     
     def create_dataframe(self, data, guild_name):
         """创建DataFrame"""
@@ -320,15 +336,15 @@ class GuildLeagueProcessorAdvanced:
         wb.remove(wb.active)
         
         # 创建数据框
-        guild1_df = self.create_dataframe(self.guild1_data, "山有扶苏")
-        guild2_df = self.create_dataframe(self.guild2_data, "璃月")
+        guild1_df = self.create_dataframe(self.guild1_data, self.guild1_name)
+        guild2_df = self.create_dataframe(self.guild2_data, self.guild2_name)
         
         # 合并数据用于综合职业排序
         combined_df = pd.concat([guild1_df, guild2_df], ignore_index=True)
         
         # 创建统计数据
-        stats1 = self.create_statistics(guild1_df, "山有扶苏")
-        stats2 = self.create_statistics(guild2_df, "璃月")
+        stats1 = self.create_statistics(guild1_df, self.guild1_name)
+        stats2 = self.create_statistics(guild2_df, self.guild2_name)
         
         # 创建职业和团长统计
         prof_stats1 = self.create_profession_statistics(guild1_df)
@@ -342,15 +358,15 @@ class GuildLeagueProcessorAdvanced:
         
         # 创建工作表
         sheets = [
-            ("本帮团长排序", self.sort_by_leader(guild1_df)),
-            ("本帮职业排序", self.sort_by_profession(guild1_df)),
-            ("敌帮团长排序", self.sort_by_leader(guild2_df)),
-            ("敌帮职业排序", self.sort_by_profession(guild2_df)),
+            (f"{self.guild1_name}团长排序", self.sort_by_leader(guild1_df)),
+            (f"{self.guild1_name}职业排序", self.sort_by_profession(guild1_df)),
+            (f"{self.guild2_name}团长排序", self.sort_by_leader(guild2_df)),
+            (f"{self.guild2_name}职业排序", self.sort_by_profession(guild2_df)),
             ("综合职业排序", self.sort_by_profession(combined_df)),
-            ("本帮职业统计", prof_stats1),
-            ("本帮团长统计", leader_stats1),
-            ("敌帮职业统计", prof_stats2),
-            ("敌帮团长统计", leader_stats2),
+            (f"{self.guild1_name}职业统计", prof_stats1),
+            (f"{self.guild1_name}团长统计", leader_stats1),
+            (f"{self.guild2_name}职业统计", prof_stats2),
+            (f"{self.guild2_name}团长统计", leader_stats2),
             ("帮会对比", pd.DataFrame([stats1, stats2]))
         ]
         
@@ -884,15 +900,15 @@ def main_cli(csv_file_path=None):
         print("数据处理完成！")
         print("生成的文件包含以下工作表：")
         print("1. 关于程序")
-        print("2. 本帮团长排序")
-        print("3. 本帮职业排序")
-        print("4. 敌帮团长排序")
-        print("5. 敌帮职业排序")
+        print(f"2. {processor.guild1_name}团长排序")
+        print(f"3. {processor.guild1_name}职业排序")
+        print(f"4. {processor.guild2_name}团长排序")
+        print(f"5. {processor.guild2_name}职业排序")
         print("6. 综合职业排序")
-        print("7. 本帮职业统计")
-        print("8. 本帮团长统计")
-        print("9. 敌帮职业统计")
-        print("10. 敌帮团长统计")
+        print(f"7. {processor.guild1_name}职业统计")
+        print(f"8. {processor.guild1_name}团长统计")
+        print(f"9. {processor.guild2_name}职业统计")
+        print(f"10. {processor.guild2_name}团长统计")
         print("11. 帮会对比")
         return True
     else:
@@ -937,15 +953,15 @@ def main():
         print("数据处理完成！")
         print("生成的文件包含以下工作表：")
         print("1. 关于程序（新增广告页面）")
-        print("2. 本帮团长排序")
-        print("3. 本帮职业排序")
-        print("4. 敌帮团长排序")
-        print("5. 敌帮职业排序")
+        print(f"2. {processor.guild1_name}团长排序")
+        print(f"3. {processor.guild1_name}职业排序")
+        print(f"4. {processor.guild2_name}团长排序")
+        print(f"5. {processor.guild2_name}职业排序")
         print("6. 综合职业排序")
-        print("7. 本帮职业统计")
-        print("8. 本帮团长统计")
-        print("9. 敌帮职业统计")
-        print("10. 敌帮团长统计")
+        print(f"7. {processor.guild1_name}职业统计")
+        print(f"8. {processor.guild1_name}团长统计")
+        print(f"9. {processor.guild2_name}职业统计")
+        print(f"10. {processor.guild2_name}团长统计")
         print("11. 帮会对比")
         
         # 显示成功消息
