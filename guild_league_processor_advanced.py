@@ -336,6 +336,10 @@ class GuildLeagueProcessorAdvanced:
         leader_stats1 = self.create_leader_statistics(guild1_df)
         leader_stats2 = self.create_leader_statistics(guild2_df)
         
+        # 首先创建广告页面
+        ws_ad = wb.create_sheet(title="关于程序", index=0)
+        self.create_advertisement_page(ws_ad)
+        
         # 创建工作表
         sheets = [
             ("本帮团长排序", self.sort_by_leader(guild1_df)),
@@ -357,6 +361,159 @@ class GuildLeagueProcessorAdvanced:
         # 保存文件
         wb.save(output_file)
         print(f"Excel文件已保存：{output_file}")
+    
+    def create_advertisement_page(self, ws):
+        """创建广告页面"""
+        # 设置列宽
+        ws.column_dimensions['A'].width = 20
+        ws.column_dimensions['B'].width = 60
+        ws.column_dimensions['C'].width = 20
+        
+        # 标题样式
+        title_font = Font(bold=True, size=16, color="FFFFFF")
+        title_fill = PatternFill(start_color="366092", end_color="366092", fill_type="solid")
+        title_alignment = Alignment(horizontal="center", vertical="center")
+        
+        # 副标题样式
+        subtitle_font = Font(bold=True, size=14, color="FFFFFF")
+        subtitle_fill = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid")
+        subtitle_alignment = Alignment(horizontal="center", vertical="center")
+        
+        # 正文样式
+        content_font = Font(size=11)
+        content_alignment = Alignment(horizontal="left", vertical="top", wrap_text=True)
+        
+        # 链接样式
+        link_font = Font(size=11, color="0000FF", underline="single")
+        
+        # 边框样式
+        border = Border(
+            left=Side(style='thin'),
+            right=Side(style='thin'),
+            top=Side(style='thin'),
+            bottom=Side(style='thin')
+        )
+        
+        # 添加内容
+        content_data = [
+            # 标题
+            ("", "帮会联赛数据处理程序 - 高级版", ""),
+            ("", "", ""),
+            
+            # 程序信息
+            ("", "程序信息", ""),
+            ("版本", "高级版 V2.0", ""),
+            ("作者", "VexMare（恶小梦）", ""),
+            ("更新时间", "2025.7.30", ""),
+            ("", "", ""),
+            
+            # 联系方式
+            ("", "联系方式", ""),
+            ("GitHub", "https://github.com/VexMare/NSH_GangWarStats", ""),
+            ("BiliBili", "https://space.bilibili.com/365374856?spm_id_from=333.1007.0.0", ""),
+            ("邮箱", "chixiaotao@foxmail.com", ""),
+            ("", "", ""),
+            
+            # 功能特色
+            ("", "功能特色", ""),
+            ("", "• 智能数据排序：按团长、职业等多种方式排序", ""),
+            ("", "• 颜色可视化：不同数据用不同颜色突出显示", ""),
+            ("", "• 详细统计：包含总计、平均值等统计信息", ""),
+            ("", "• 多工作表：10个不同视角的数据分析", ""),
+            ("", "• 职业特定排序：素问按治疗值，九灵按青灯焚骨", ""),
+            ("", "", ""),
+            
+            # 使用说明
+            ("", "使用说明", ""),
+            ("", "1. 准备CSV文件，确保格式正确（UTF-8编码）", ""),
+            ("", "2. 运行程序，选择CSV文件", ""),
+            ("", "3. 程序自动生成Excel文件，包含10个工作表", ""),
+            ("", "4. 查看不同角度的数据分析结果", ""),
+            ("", "", ""),
+            
+            # 版权声明
+            ("", "版权声明", ""),
+            ("", "本程序采用 MIT 许可证", ""),
+            ("", "", ""),
+            ("", "MIT License", ""),
+            ("", "Copyright (c) 2024 VexMare", ""),
+            ("", "", ""),
+            ("", "Permission is hereby granted, free of charge, to any person obtaining a copy", ""),
+            ("", "of this software and associated documentation files (the \"Software\"), to deal", ""),
+            ("", "in the Software without restriction, including without limitation the rights", ""),
+            ("", "to use, copy, modify, merge, publish, distribute, sublicense, and/or sell", ""),
+            ("", "copies of the Software, and to permit persons to whom the Software is", ""),
+            ("", "furnished to do so, subject to the following conditions:", ""),
+            ("", "", ""),
+            ("", "The above copyright notice and this permission notice shall be included in all", ""),
+            ("", "copies or substantial portions of the Software.", ""),
+            ("", "", ""),
+            ("", "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR", ""),
+            ("", "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,", ""),
+            ("", "FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE", ""),
+            ("", "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER", ""),
+            ("", "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,", ""),
+            ("", "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE", ""),
+            ("", "SOFTWARE.", ""),
+            ("", "", ""),
+            
+            # 重要声明
+            ("", "重要声明", ""),
+            ("", "⚠️  禁止商用：本程序仅供学习和个人使用，禁止用于商业用途", ""),
+            ("", "⚠️  免责声明：使用本程序产生的任何后果由用户自行承担", ""),
+            ("", "⚠️  技术支持：如有问题，请通过上述联系方式联系作者", ""),
+            ("", "", ""),
+            
+            # 未来计划
+            ("", "未来计划", ""),
+            ("", "我们即将推出收费版网站服务，提供更便捷的在线数据处理功能。", ""),
+            ("", "如果您有相关开发经验，欢迎加入我们的团队！", ""),
+            ("", "请将您的GitHub链接发送到邮箱：chixiaotao@foxmail.com", ""),
+        ]
+        
+        # 写入内容并设置样式
+        for row_idx, (col_a, col_b, col_c) in enumerate(content_data, 1):
+            # 写入数据
+            ws.cell(row=row_idx, column=1, value=col_a)
+            ws.cell(row=row_idx, column=2, value=col_b)
+            ws.cell(row=row_idx, column=3, value=col_c)
+            
+            # 设置边框
+            for col in range(1, 4):
+                ws.cell(row=row_idx, column=col).border = border
+            
+            # 根据内容设置样式
+            if "帮会联赛数据处理程序" in str(col_b):
+                # 主标题
+                ws.cell(row=row_idx, column=2).font = title_font
+                ws.cell(row=row_idx, column=2).fill = title_fill
+                ws.cell(row=row_idx, column=2).alignment = title_alignment
+                # 合并单元格
+                ws.merge_cells(f'A{row_idx}:C{row_idx}')
+            elif any(keyword in str(col_b) for keyword in ["程序信息", "联系方式", "功能特色", "使用说明", "版权声明", "重要声明", "未来计划"]):
+                # 副标题
+                ws.cell(row=row_idx, column=2).font = subtitle_font
+                ws.cell(row=row_idx, column=2).fill = subtitle_fill
+                ws.cell(row=row_idx, column=2).alignment = subtitle_alignment
+                # 合并单元格
+                ws.merge_cells(f'A{row_idx}:C{row_idx}')
+            elif any(keyword in str(col_b) for keyword in ["https://", "chixiaotao@foxmail.com"]):
+                # 链接
+                ws.cell(row=row_idx, column=2).font = link_font
+                ws.cell(row=row_idx, column=2).alignment = content_alignment
+            elif col_b and col_b != "":
+                # 正文内容
+                ws.cell(row=row_idx, column=2).font = content_font
+                ws.cell(row=row_idx, column=2).alignment = content_alignment
+        
+        # 设置行高
+        for row in range(1, len(content_data) + 1):
+            if "帮会联赛数据处理程序" in str(ws.cell(row=row, column=2).value):
+                ws.row_dimensions[row].height = 30
+            elif any(keyword in str(ws.cell(row=row, column=2).value) for keyword in ["程序信息", "联系方式", "功能特色", "使用说明", "版权声明", "重要声明", "未来计划"]):
+                ws.row_dimensions[row].height = 25
+            else:
+                ws.row_dimensions[row].height = 18
     
     def format_worksheet(self, ws, df, sheet_name):
         """格式化工作表"""
@@ -726,16 +883,17 @@ def main_cli(csv_file_path=None):
     if processor.process():
         print("数据处理完成！")
         print("生成的文件包含以下工作表：")
-        print("1. 本帮团长排序")
-        print("2. 本帮职业排序")
-        print("3. 敌帮团长排序")
-        print("4. 敌帮职业排序")
-        print("5. 综合职业排序")
-        print("6. 本帮职业统计")
-        print("7. 本帮团长统计")
-        print("8. 敌帮职业统计")
-        print("9. 敌帮团长统计")
-        print("10. 帮会对比")
+        print("1. 关于程序")
+        print("2. 本帮团长排序")
+        print("3. 本帮职业排序")
+        print("4. 敌帮团长排序")
+        print("5. 敌帮职业排序")
+        print("6. 综合职业排序")
+        print("7. 本帮职业统计")
+        print("8. 本帮团长统计")
+        print("9. 敌帮职业统计")
+        print("10. 敌帮团长统计")
+        print("11. 帮会对比")
         return True
     else:
         print("数据处理失败！")
@@ -778,19 +936,20 @@ def main():
     if processor.process():
         print("数据处理完成！")
         print("生成的文件包含以下工作表：")
-        print("1. 本帮团长排序")
-        print("2. 本帮职业排序")
-        print("3. 敌帮团长排序")
-        print("4. 敌帮职业排序")
-        print("5. 综合职业排序")
-        print("6. 本帮职业统计")
-        print("7. 本帮团长统计")
-        print("8. 敌帮职业统计")
-        print("9. 敌帮团长统计")
-        print("10. 帮会对比")
+        print("1. 关于程序（新增广告页面）")
+        print("2. 本帮团长排序")
+        print("3. 本帮职业排序")
+        print("4. 敌帮团长排序")
+        print("5. 敌帮职业排序")
+        print("6. 综合职业排序")
+        print("7. 本帮职业统计")
+        print("8. 本帮团长统计")
+        print("9. 敌帮职业统计")
+        print("10. 敌帮团长统计")
+        print("11. 帮会对比")
         
         # 显示成功消息
-        messagebox.showinfo("处理完成", f"数据处理完成！\n输出文件已保存。")
+        messagebox.showinfo("处理完成", f"数据处理完成！\n输出文件已保存。\n新增了广告页面，包含作者信息和版权声明。")
     else:
         print("数据处理失败！")
         messagebox.showerror("处理失败", "数据处理失败，请检查CSV文件格式。")
