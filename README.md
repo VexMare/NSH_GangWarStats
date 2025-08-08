@@ -1,6 +1,6 @@
 帮会联赛数据处理程序 - 使用说明
 =====================================
-如何你是不懂代码的新手 你应该去这个页面下载
+如果你是不懂代码的新手 你应该去这个页面下载
 [releases](https://github.com/VexMare/NSH_GangWarStats/releases)
 
 
